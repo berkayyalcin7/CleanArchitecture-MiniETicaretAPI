@@ -122,3 +122,24 @@ Bu desen, veritabanýna yapýlacak bir veya daha fazla deðiþikliðin tek bir atomik
 - **`IUnitOfWork`**: Deðiþiklikleri kaydetmek için tek bir metot (`SaveChangesAsync`) sunan bir arayüzdür.
 - **Ýþleyiþ**: `Command Handler`'larýmýz, `Repository`'ler aracýlýðýyla istedikleri kadar ekleme, güncelleme, silme iþlemi yapabilirler. Bu iþlemler EF Core'un Change Tracker'ýnda birikir. `Handler`'ýn sonunda `_unitOfWork.SaveChangesAsync()` çaðrýldýðýnda, biriken tüm deðiþiklikler tek seferde veritabanýna gönderilir. 
 - Eðer bu esnada bir hata olursa, hiçbir deðiþiklik kaydedilmez ve veri bütünlüðü korunur.
+
+## Performans Optimizasyonu: Redis ile Caching
+Sýk eriþilen veritabaný sorgularýnýn yarattýðý yükü azaltmak ve API yanýt sürelerini iyileþtirmek için daðýtýk önbellekleme (distributed caching) stratejisi kullanýyoruz. Bu amaçla sektör standardý olan **Redis**'i tercih ettik.
+
+### Cache-Aside Stratejisi
+Uyguladýðýmýz desen "Cache-Aside" olarak bilinir ve þu adýmlarý izler:
+1.  **Cache'i Kontrol Et:** Bir veri talebi geldiðinde, uygulama önce Redis'e bakar.
+2.  **Cache Hit:** Veri Redis'te mevcutsa, doðrudan buradan okunur ve kullanýcýya döndürülür. Veritabanýna gidilmez.
+3.  **Cache Miss:** Veri Redis'te yoksa, uygulama veritabanýna gider, veriyi okur.
+4.  **Cache'i Doldur:** Veritabanýndan okunan veri, bir sonraki istekte kullanýlmak üzere Redis'e yazýlýr.
+5.  **Veriyi Döndür:** Veritabanýndan okunan veri kullanýcýya döndürülür.
+
+### MediatR `CachingBehavior`
+Bu caching mantýðýný, tüm iþleyicilerden (`Handler`) soyutlamak için bir `MediatR Pipeline Behavior` olarak tasarladýk.
+- **`ICacheableRequest`**: Hangi `Query`'lerin cache'leneceðini belirtmek için kullanýlan bir iþaretçi arayüzdür. Cache anahtarý (`CacheKey`) ve geçerlilik süresi (`SlidingExpiration`) gibi bilgileri içerir.
+- **`CachingBehavior`**: `ICacheableRequest` arayüzünü uygulayan istekleri yakalar ve yukarýda anlatýlan Cache-Aside mantýðýný otomatik olarak çalýþtýrýr.
+
+### Cache Invalidation (Önbelleði Geçersiz Kýlma)
+Önbellekte tutulan verinin güncelliðini korumak, caching stratejisinin en kritik parçasýdýr.
+- **Problem:** Veritabanýndaki bir veri deðiþtirildiðinde (yeni ürün ekleme, güncelleme, silme), cache'teki kopya "eski" kalýr.
+- **Çözüm:** Veriyi deðiþtiren herhangi bir **Command** (`Create`, `Update`, `Delete`) baþarýyla tamamlandýktan sonra, ilgili cache anahtarý (`GetAllProducts` gibi) Redis'ten bilinçli olarak silinir. Bu sayede bir sonraki okuma isteði, en güncel veriyi veritabanýndan çekmek ve cache'i yeniden doldurmak zorunda kalýr.

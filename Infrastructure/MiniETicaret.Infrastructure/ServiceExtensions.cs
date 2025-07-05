@@ -9,12 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MiniETicaret.Application.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace MiniETicaret.Infrastructure
 {
     public static class ServiceExtensions
     {
-        public static void AddInfrastructureServices(this IServiceCollection services)
+        public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase("memoryDb")); // In-Memory DB'yi burada tanımlıyoruz.
@@ -24,6 +25,11 @@ namespace MiniETicaret.Infrastructure
 
             // services.AddScoped<IProductRepository, ProductRepository>(); satırının altına ekleyin.
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration.GetConnectionString("RedisURL") ?? configuration["CacheSettings:RedisURL"];
+            });
         }
     }
 }

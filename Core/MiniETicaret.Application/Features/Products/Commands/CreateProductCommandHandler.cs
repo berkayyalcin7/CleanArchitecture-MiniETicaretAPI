@@ -8,10 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace MiniETicaret.Application.Features.Products.Commands
 {
-    public class CreateProductCommandHandler(IProductRepository productRepository, IMapper mapper, IUnitOfWork unitOfWork)
+    public class CreateProductCommandHandler(IProductRepository productRepository, IMapper mapper, IUnitOfWork unitOfWork, IDistributedCache cache)
     : IRequestHandler<CreateProductCommand, Guid>
     {
         public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -20,7 +21,11 @@ namespace MiniETicaret.Application.Features.Products.Commands
             product.CreatedDate = DateTime.UtcNow; // Tarih atamasını burada yapıyoruz.
 
             await productRepository.AddAsync(product);
+
             await unitOfWork.SaveChangesAsync(cancellationToken); // Değişiklikleri tek noktadan kaydediyoruz.
+
+            // YENİ EKLENEN KOD: Cache'i temizle
+            await cache.RemoveAsync("GetAllProducts", cancellationToken);
 
             return product.Id;
         }

@@ -23,6 +23,8 @@ namespace MiniETicaret.Application
 
             // Behavior'ı MediatR pipeline'ına ekleyecek kodu ekleyelim.
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
         }
     }
 }
