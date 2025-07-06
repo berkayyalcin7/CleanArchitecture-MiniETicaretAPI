@@ -142,4 +142,34 @@ Bu caching mantýðýný, tüm iþleyicilerden (`Handler`) soyutlamak için bir `Mediat
 ### Cache Invalidation (Önbelleði Geçersiz Kýlma)
 Önbellekte tutulan verinin güncelliðini korumak, caching stratejisinin en kritik parçasýdýr.
 - **Problem:** Veritabanýndaki bir veri deðiþtirildiðinde (yeni ürün ekleme, güncelleme, silme), cache'teki kopya "eski" kalýr.
-- **Çözüm:** Veriyi deðiþtiren herhangi bir **Command** (`Create`, `Update`, `Delete`) baþarýyla tamamlandýktan sonra, ilgili cache anahtarý (`GetAllProducts` gibi) Redis'ten bilinçli olarak silinir. Bu sayede bir sonraki okuma isteði, en güncel veriyi veritabanýndan çekmek ve cache'i yeniden doldurmak zorunda kalýr.
+- **Çözüm:** Veriyi deðiþtiren herhangi bir **Command** (`Create`, `Update`, `Delete`) baþarýyla tamamlandýktan sonra, ilgili cache anahtarý (`GetAllProducts` gibi) 
+- Redis'ten bilinçli olarak silinir. Bu sayede bir sonraki okuma isteði, en güncel veriyi veritabanýndan çekmek ve cache'i 
+- yeniden doldurmak zorunda kalýr.
+
+# .NET 8 Clean Architecture API ve Razor Pages Projesi
+
+Bu proje, modern .NET teknolojileri kullanýlarak geliþtirilmiþ, Clean Architecture prensiplerine uygun bir API ve bu API ile haberleþen bir Razor Pages web uygulamasýndan oluþur. Proje, bir full-stack .NET geliþtiricisinin kariyerinde bir sonraki adýmý atmasý için gereken temel ve ileri seviye konularý pratik bir þekilde öðretmeyi amaçlar.
+
+## Proje Mimarisi ve Önemli Konseptler
+
+Proje, bakýmý kolay, test edilebilir ve ölçeklenebilir bir yapý saðlamak için **Clean Architecture** prensiplerine göre katmanlara ayrýlmýþtýr: `Domain`, `Application`, `Infrastructure` ve `Presentation`.
+
+### Sayfalama (Pagination) Yaklaþýmý
+Uygulamada, çok sayýda verinin verimli bir þekilde sunulmasý için **Ýstemci Taraflý Sayfalama (Client-Side Pagination)** yaklaþýmý benimsenmiþtir.
+
+- **Veri Akýþý:** `API`, `/api/products` endpoint'inden tüm ürün verisini tek bir seferde döndürür. Bu sonuç, `Infrastructure` katmanýnda **Redis** ile cache'lenir.
+- **Mantýk:** `Presentation` katmanýndaki `Razor Pages` uygulamasý, bu tüm veri setini alýr. Sayfalara bölme iþlemi, C# tarafýnda (`Index.cshtml.cs` içinde) **LINQ'in `.Skip()` ve `.Take()` metotlarý** kullanýlarak bellek üzerinde gerçekleþtirilir.
+- **Gerekçe:** Bu yaklaþým, API ve cache'leme mantýðýný son derece basit tutar. Ancak bu, sadece eðitim amaçlý ve yönetilebilir boyuttaki veri setleri için tercih edilmiþtir. Çok büyük veri setleri (50.000+) için endüstri standardý, her sayfa için ayrý bir veritabaný sorgusu yapan **Sunucu Taraflý Sayfalama**'dýr.
+
+### Akýllý Sayfalama Kontrolü (Smart Pagination Control)
+Kullanýcý deneyimini iyileþtirmek için, yüzlerce sayfa numarasýnýn tamamýný listelemek yerine, sadece mevcut sayfanýn etrafýndaki birkaç sayfa numarasýný gösteren akýllý bir arayüz geliþtirilmiþtir.
+- **Hesaplama:** Gösterilecek sayfa aralýðý (`StartPage`, `EndPage`), `IndexModel` C# sýnýfý içinde dinamik olarak hesaplanýr.
+- **Görünüm:** Kullanýcý arayüzü, `[1] [...] [5] [6] [7] [...] [100]` gibi bir formatta oluþturularak kolay bir gezinti imkaný sunar.
+
+### Gerçek Zamanlý Bildirimler (SignalR)
+Uygulamaya anlýk iletiþim yeteneði kazandýrmak için **ASP.NET Core SignalR** kullanýlmýþtýr.
+- **Hub:** `API` projesi, istemcilerle iletiþimi yöneten bir `ProductHub` içerir.
+- **Soyutlama:** `Application` katmaný, SignalR'dan tamamen habersizdir. Bildirim gönderme iþlemi, `Application` katmanýnda tanýmlanan `IProductHubService` arayüzü üzerinden yapýlýr. Bu arayüzün somut uygulamasý `API` projesinde yer alýr ve `IHubContext` kullanarak istemcilere mesaj gönderir.
+- **Senaryo:** Sisteme yeni bir ürün eklendiðinde, `CreateProductCommandHandler` bu servis aracýlýðýyla bir bildirim tetikler. Bildirim, `ProductHub`'a baðlý olan tüm web istemcilerine anýnda gönderilir ve þýk bir "Toast" mesajý olarak ekranda belirir.
+
+Bu proje, modern bir web uygulamasýnýn temel taþlarýný oluþturan performans, mimari, kullanýcý deneyimi ve gerçek zamanlý iletiþim gibi konularý bir araya getiren bütüncül bir örnektir.

@@ -9,10 +9,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using MiniETicaret.Application.Interfaces.Hubs;
+using MiniETicaret.Application.DTOs;
 
 namespace MiniETicaret.Application.Features.Products.Commands
 {
-    public class CreateProductCommandHandler(IProductRepository productRepository, IMapper mapper, IUnitOfWork unitOfWork, IDistributedCache cache)
+    public class CreateProductCommandHandler(IProductRepository productRepository, 
+        IMapper mapper, 
+        IUnitOfWork unitOfWork, 
+        IDistributedCache cache,
+        IProductHubService productHubService)
     : IRequestHandler<CreateProductCommand, Guid>
     {
         public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -26,6 +32,10 @@ namespace MiniETicaret.Application.Features.Products.Commands
 
             // YENİ EKLENEN KOD: Cache'i temizle
             await cache.RemoveAsync("GetAllProducts", cancellationToken);
+
+            var productDto = mapper.Map<ProductDto>(product);
+            // Sonra hub servisine tüm DTO'yu gönderin
+            await productHubService.ProductAddedAsync(productDto);
 
             return product.Id;
         }

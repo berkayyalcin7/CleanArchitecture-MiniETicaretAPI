@@ -1,5 +1,8 @@
+using MiniETicaret.API.Hubs;
 using MiniETicaret.API.Middlewares;
+using MiniETicaret.API.Services;
 using MiniETicaret.Application;
+using MiniETicaret.Application.Interfaces.Hubs;
 using MiniETicaret.Infrastructure;
 using MiniETicaret.Infrastructure.Persistence;
 
@@ -7,6 +10,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddScoped<IProductHubService, ProductHubService>();
+builder.Services.AddSignalR();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .SetIsOriginAllowed((host) => true) // Tüm kaynaklara izin ver (sadece geliþtirme için)
+                   .AllowCredentials();
+        });
+});
 
 // Program.cs
 builder.Services.AddControllers();
@@ -27,11 +45,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// YENÝ EKLENEN SATIR:
+app.UseCors("AllowAll");
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 // Controller'larý kullanabilmek için gerekli middleware'i ekliyoruz.
 app.MapControllers();
+
+// YENÝ EKLENEN SATIR:
+app.MapHub<ProductHub>("/product-hub");
 
 // Program.cs'in sonuna, app.Run()'dan önce eklenecek.
 // Baþlangýçta In-Memory DB'ye veri eklemek için.

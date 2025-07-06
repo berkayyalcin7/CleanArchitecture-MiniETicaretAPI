@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniETicaret.Web", "Presentation\MiniETicaret.Web\MiniETicaret.Web.csproj", "{3501AB6D-A9CF-4964-B6DF-407C9FDDC2B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{18B24514-9653-4BFE-911C-37FD5CBC3BE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18B24514-9653-4BFE-911C-37FD5CBC3BE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18B24514-9653-4BFE-911C-37FD5CBC3BE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3501AB6D-A9CF-4964-B6DF-407C9FDDC2B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3501AB6D-A9CF-4964-B6DF-407C9FDDC2B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3501AB6D-A9CF-4964-B6DF-407C9FDDC2B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3501AB6D-A9CF-4964-B6DF-407C9FDDC2B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{18B578C5-FED7-4C28-BFE3-CFA1A8C0C7A2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{A4278340-0F43-4919-BCAD-83E08A5A968B} = {63850842-5636-4D86-9C1E-856CA0B33C4E}
 		{18B24514-9653-4BFE-911C-37FD5CBC3BE8} = {ECD0D2B1-CFA6-4AA8-B480-8A5E8FB51DE5}
+		{3501AB6D-A9CF-4964-B6DF-407C9FDDC2B7} = {ECD0D2B1-CFA6-4AA8-B480-8A5E8FB51DE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D730913C-4C43-4D49-8F9F-D59C4421D9F0}
