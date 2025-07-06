@@ -1,3 +1,35 @@
+## Projenin 1. Aþamasýnda Ýþlenen Konular ve Teknolojiler
+
+Bu proje, modern bir .NET full-stack geliþtiricisinin bilmesi gereken temel ve ileri seviye birçok konsepti kapsamaktadýr.
+
+### Temel Mimari ve Desenler (Core Architecture & Patterns)
+- **Clean Architecture:** Sorumluluklarýn ayrýþtýrýldýðý 4 katmanlý (Domain, Application, Infrastructure, Presentation) mimari kurulumu.
+- **CQRS (Command Query Responsibility Segregation):** Veri okuma (Query) ve yazma (Command) mantýklarýnýn birbirinden ayrýlmasý.
+- **Mediator Pattern:** `MediatR` kütüphanesi ile katmanlar arasý baðýmlýlýðý azaltma ve istek/cevap akýþýný yönetme.
+- **Repository & Unit of Work Patterns:** Veri eriþimini soyutlama ve veritabaný iþlemlerini tek bir transaction olarak yönetme.
+- **Dependency Injection (DI):** Servislerin ve baðýmlýlýklarýn merkezi bir yerden yönetilmesi (`Program.cs` ve `ServiceExtensions`).
+
+### API Geliþtirme (API Development)
+- **ASP.NET Core Web API:** RESTful prensiplerine uygun (GET, POST, PUT, DELETE) endpoint'lerin oluþturulmasý.
+- **Swagger (OpenAPI):** API'nin interaktif bir þekilde dokümante edilmesi ve test edilmesi.
+
+### Veri Yönetimi ve Performans (Data Management & Performance)
+- **Entity Framework Core:** Veritabaný iþlemleri için ORM kullanýmý (In-Memory Database ile).
+- **Redis ile Daðýtýk Caching (Distributed Caching):** Sýk eriþilen verileri `IDistributedCache` arayüzü ile Redis üzerinde önbelleðe alarak performansý artýrma.
+- **Bogus Kütüphanesi ile Veri Tohumlama (Data Seeding):** Testler için binlerce gerçekçi sahte verinin dinamik olarak üretilmesi.
+
+### Kod Kalitesi ve Saðlamlýk (Code Quality & Robustness)
+- **FluentValidation:** Ýþ kurallarýnýn zincirleme metotlarla temiz bir þekilde doðrulanmasý.
+- **MediatR Pipeline Behaviors:** Caching ve Validation gibi kesiþen ilgileri (cross-cutting concerns) iþ mantýðýndan ayýrma.
+- **Global Hata Yönetimi (Exception Handling Middleware):** Uygulamada oluþan hatalarý tek bir merkezden yakalayýp standart bir cevap formatýna dönüþtürme.
+
+### Web Ýstemcisi ve Gerçek Zamanlý Ýletiþim (Web Client & Real-time Communication)
+- **ASP.NET Core Razor Pages:** Sunucu taraflý, sayfa odaklý bir web arayüzü geliþtirme.
+- **IHttpClientFactory:** Web istemcisinden API'ye güvenli ve verimli HTTP istekleri yapma.
+- **Ýstemci & Sunucu Taraflý Sayfalama:** Farklý sayfalama stratejilerinin uygulanmasý ve karþýlaþtýrýlmasý.
+- **SignalR:** Sunucudan istemciye anlýk veri gönderimi (server-push) ile gerçek zamanlý bildirim ve UI güncellemesi yapma.
+
+
 # MiniETicaretAPI Projesi
 
 Bu proje, Clean Architecture prensipleri kullanýlarak geliþtirilmiþ bir ASP.NET Core Web API'sidir.
